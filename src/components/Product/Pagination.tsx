@@ -5,11 +5,10 @@ import { useProductContext } from "./context/ProductContext";
 
 export function Pagination() {
     const { state, updateProductPageList } = useProductContext();
-    const { total, take, skip } = state;
+    const { total, take, productList } = state;
     const [active, setActive] = React.useState(1);
 
-    const totalPageNumber = Math.round(total / take)
-
+    const totalPageNumber = Math.ceil(total / take)
     const handleClickPageNavigation = (pageNum: number) => {
         const paramSkip = (pageNum - 1) * take;
         updateProductPageList(paramSkip, take);
@@ -41,6 +40,7 @@ export function Pagination() {
 
 
     const renderPageNumber = () => {
+        if (productList.length === 0) return;
         return [...Array(totalPageNumber)].map((_, index) => {
             const pageNum = index + 1;
             return <IconButton key={pageNum} {...getItemProps(pageNum)}>{pageNum}</IconButton>
@@ -66,7 +66,7 @@ export function Pagination() {
                 variant="text"
                 className="flex items-center gap-2"
                 onClick={next}
-                disabled={active === 5}
+                disabled={active === totalPageNumber}
             >
                 Next
                 <ArrowRightIcon strokeWidth={2} className="h-4 w-4" />

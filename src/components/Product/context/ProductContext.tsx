@@ -12,6 +12,7 @@ export const initialState = {
     skip: 0,
     take: 20,
     total: 0,
+    textSearch: ''
 }
 const ComponentContext = createContext<{
     state: ContextStateType,
@@ -50,7 +51,12 @@ const ComponentProvider = ({ children }: { children: ReactNode }) => {
             skip: String(skip),
             take: String(take),
         })
-        const fetchUrl = `${process.env.API_URL}/product/list?${searchParam}`
+        let fetchUrl = `${process.env.API_URL}/product/list?${searchParam}`
+
+        if (state.textSearch) {
+            searchParam.append('text', state.textSearch);
+            fetchUrl = `${process.env.API_URL}/product/search?${searchParam}`
+        }
 
         dispatch({ type: DispatchTypes.SET_STATE, payload: { loadingProductList: true } });
 

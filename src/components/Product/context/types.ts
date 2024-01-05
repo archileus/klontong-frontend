@@ -7,6 +7,7 @@ export type ContextStateType = {
     skip: number,
     take: number,
     total: number,
+    textSearch: string,
 }
 
 export type Product = {
