@@ -35,8 +35,14 @@ const Login = () => {
                 body: JSON.stringify(param),
 
             })
-        if (error) displayToaster({ text: error.message, err: true })
-        if (data?.code !== 'SUCCESS') displayToaster({ text: data?.message || 'System Error', err: true });
+        if (error) {
+            displayToaster({ text: error.message, err: true })
+            return
+        }
+        if (data?.code !== 'SUCCESS') {
+            displayToaster({ text: data?.message || 'System Error', err: true });
+            return
+        }
 
         window.location.assign('/')
     }

@@ -70,11 +70,11 @@ export function useLazyFetch<T = unknown>(
         dispatch({ type: 'loading' })
 
         // If a cache exists for this url, return it
-        // if (cache.current[fetchUrl]) {
-        //     dispatch({ type: 'fetched', payload: cache.current[fetchUrl] })
-        //     return { ...initialState, data: cache.current[fetchUrl] }
+        if (cache.current[fetchUrl]) {
+            dispatch({ type: 'fetched', payload: cache.current[fetchUrl] })
+            return { ...initialState, data: cache.current[fetchUrl] }
 
-        // }
+        }
 
         try {
             const response = await fetch(fetchUrl,
@@ -91,7 +91,14 @@ export function useLazyFetch<T = unknown>(
 
                 });
             if (!response.ok) {
-                throw new Error(response.statusText)
+                if (response.status >= 400 && response.status < 500) {
+                    const dataJson = (await response.json()) as T
+                    dispatch({ type: 'fetched', payload: dataJson })
+                    return { ...initialState, data: dataJson }
+                } else {
+                    throw new Error(response.statusText)
+                }
+
             }
 
             const data = (await response.json()) as T
@@ -101,6 +108,7 @@ export function useLazyFetch<T = unknown>(
             dispatch({ type: 'fetched', payload: data })
             return { ...initialState, data: data }
         } catch (error) {
+            console.error(error);
             if (cancelRequest.current) return { ...initialState, error: error as Error }
 
             dispatch({ type: 'error', payload: error as Error })

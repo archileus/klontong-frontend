@@ -55,10 +55,10 @@ export function useFetch<T = unknown>(
             dispatch({ type: 'loading' })
 
             // If a cache exists for this url, return it
-            // if (cache.current[url]) {
-            //     dispatch({ type: 'fetched', payload: cache.current[url] })
-            //     return
-            // }
+            if (cache.current[url]) {
+                dispatch({ type: 'fetched', payload: cache.current[url] })
+                return
+            }
 
             try {
                 const response = await fetch(url, {
@@ -73,7 +73,13 @@ export function useFetch<T = unknown>(
 
                 });
                 if (!response.ok) {
-                    throw new Error(response.statusText)
+                    if (response.status >= 400 && response.status < 500) {
+                        const dataJson = (await response.json()) as T
+                        dispatch({ type: 'fetched', payload: dataJson })
+                        return { ...initialState, data: dataJson }
+                    } else {
+                        throw new Error(response.statusText)
+                    }
                 }
 
                 const data = (await response.json()) as T

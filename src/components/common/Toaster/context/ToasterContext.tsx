@@ -38,7 +38,8 @@ const ComponentProvider = ({ children }: { children: ReactNode }) => {
 
     const displayToaster = (props: ToasterData) => {
         const { show = true, err = false, ...rest } = props;
-        setToasterData({ ...toasterData, ...rest, show });
+
+        setToasterData({ ...toasterData, ...rest, show, err });
     }
 
     const handleCloseToaster = () => {
